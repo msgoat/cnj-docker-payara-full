@@ -21,6 +21,8 @@ ENV HOME_DIR=$PAYARA_HOME\
     SCRIPT_DIR=$PAYARA_HOME/scripts\
     CONFIG_DIR=$PAYARA_HOME/config\
     DEPLOY_DIR=$PAYARA_HOME/deployments\
+    PASSWORD_FILE=$PAYARA_HOME/passwordFile\
+    # Added for backwards compatibility
     PAYARA_PASSWORD_FILE=$PAYARA_HOME/passwordFile\
     # Payara Server Domain options
     DOMAIN_NAME=production\
@@ -49,13 +51,7 @@ RUN echo "Update packages, install required packages and update trust store" && 
     mkdir -p ${CONFIG_DIR} && \
     mkdir -p ${SCRIPT_DIR} && \
     mkdir -p ${HOME_DIR}/.gfclient && \
-    chown -R payara:payara ${HOME_DIR} && \
-    echo "Install tini as minimized init system" && \
-    wget --no-verbose -O /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && \
-    wget --no-verbose -O /tini.asc https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc && \
-    gpg --batch --keyserver "hkp://p80.pool.sks-keyservers.net:80" --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 && \
-    gpg --batch --verify /tini.asc /tini && \
-    chmod +x /tini
+    chown -R payara:payara ${HOME_DIR}
 
 USER payara
 WORKDIR ${HOME_DIR}
@@ -67,19 +63,19 @@ RUN echo "Download and unzip the Payara distribution" && \
     mv payara*/ appserver && \
     echo "Configure the password file for configuring Payara" && \
     echo -e "AS_ADMIN_PASSWORD=\nAS_ADMIN_NEWPASSWORD=${ADMIN_PASSWORD}\n\n" > /tmp/tmpfile && \
-    echo -e "AS_ADMIN_PASSWORD=${ADMIN_PASSWORD}\n\n" >> ${PAYARA_PASSWORD_FILE} && \
+    echo -e "AS_ADMIN_PASSWORD=${ADMIN_PASSWORD}\n\n" >> ${PASSWORD_FILE} && \
     echo "Configure the payara domain" && \
     ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=/tmp/tmpfile change-admin-password --domain_name=${DOMAIN_NAME} && \
-    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PAYARA_PASSWORD_FILE} start-domain ${DOMAIN_NAME} && \
-    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PAYARA_PASSWORD_FILE} enable-secure-admin && \
-    for MEMORY_JVM_OPTION in $(${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PAYARA_PASSWORD_FILE} list-jvm-options | grep "Xm[sx]"); do\
-        ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PAYARA_PASSWORD_FILE} delete-jvm-options $MEMORY_JVM_OPTION;\
+    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} start-domain ${DOMAIN_NAME} && \
+    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} enable-secure-admin && \
+    for MEMORY_JVM_OPTION in $(${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} list-jvm-options | grep "Xm[sx]"); do\
+        ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} delete-jvm-options $MEMORY_JVM_OPTION;\
     done && \
     # FIXME: when upgrading this container to Java 10+, this needs to be changed to '-XX:+UseContainerSupport' and '-XX:MaxRAMPercentage'
-    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PAYARA_PASSWORD_FILE} create-jvm-options '-XX\:+UnlockExperimentalVMOptions:-XX\:+UseCGroupMemoryLimitForHeap:-XX\:MaxRAMFraction=1' && \
+    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} create-jvm-options '-XX\:+UnlockExperimentalVMOptions:-XX\:+UseCGroupMemoryLimitForHeap:-XX\:MaxRAMFraction=1' && \
     # FIXME: waiting on fix to https://github.com/payara/Payara/issues/3506
-    #${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PAYARA_PASSWORD_FILE} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.logtoFile=false && \
-    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PAYARA_PASSWORD_FILE} stop-domain ${DOMAIN_NAME} && \
+    #${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.logtoFile=false && \
+    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} stop-domain ${DOMAIN_NAME} && \
     # Cleanup unused files
     rm -rf \
         /tmp/tmpFile \
@@ -100,5 +96,5 @@ RUN mkdir -p ${SCRIPT_DIR}/init.d && \
 # 8181: https
 EXPOSE 4848 9009 8080 8181
 
-ENTRYPOINT ["/tini", "--"]
-CMD ["scripts/docker-entrypoint.sh"]
+ENTRYPOINT ["scripts/docker-entrypoint.sh"]
+CMD ["start-domain"]

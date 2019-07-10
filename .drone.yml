@@ -5,7 +5,7 @@ pipeline:
       - mvn clean deploy --batch-mode --fail-fast --errors -V -U
   notification-stage:
     image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
+    webhook: https://hooks.slack.com/services/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
     channel: drone
     when:
       status: [ success, failure ]

@@ -1,7 +1,7 @@
 # cnj-docker-payara-full
 
-Builds a naked Payara Full Profile Server image primarily intended to be extended for 
-application specific configuration.
+Builds a Payara Full Profile Server image primarily intended to be extended by the CloudTrain JavaEE showcases.
+Comes with a preconfigured PostgreSQL datasource.
 
 ## Docker Pull Command
 `docker pull hmfwpncj/cnj-docker-payara-full`
@@ -14,20 +14,6 @@ using the following docker build file template:
 ``` 
 FROM docker.at.automotive.msg.team/cloudtrain/docker-payara-full:latest
 
-ENV \
-  PAYARA_AS_ADMIN_CMD="${PAYARA_PATH}/bin/asadmin --user ${ADMIN_USER} --passwordfile=${PAYARA_PASSWORD_FILE} --echo"
-
-# Configure the naked payara according to your applications requirements using asadmin commands
-RUN \
-  && echo "Starting Payara domain ${PAYARA_DOMAIN} to configure application resources" \
-  && ${PAYARA_AS_ADMIN_CMD} start-domain ${PAYARA_DOMAIN} \
-  && echo "Starting application server configuration..." \
-# TODO: add your asadmin commands here using the following pattern
-# && ${PAYARA_AS_ADMIN_CMD} <asadmin command> \
-  && echo "... finished  application server configuration" \
-  && echo "Stopping Payara domain ${PAYARA_DOMAIN} after configuring application resources" \
-  && ${PAYARA_AS_ADMIN_CMD} stop-domain ${PAYARA_DOMAIN}
-
 # copy build artifact into payara deployment folder
 COPY *.war ${DEPLOY_DIR}/
 ```
@@ -37,6 +23,16 @@ to the deployment folder of the Payara application server and automatically depl
 By default, your application will listen on port 8080 for incoming HTTP traffic.
 
 *NOTE*: HTTPS endpoints are currently not supported due to complexity of TSL certificate integration. Please contact us, if you should need HTTPS support. 
+
+## Configurable Environment
+
+| Environment Variable Name | Type | Description |
+| --- | --- | --- |
+| POSTGRES_DB_USER | string | __(required)__ PostgreSQL user name | 
+| POSTGRES_DB_PASSWORD | string | __(required)__ PostgreSQL user password | 
+| POSTGRES_DB_NAME | string | __(required)__ PostgreSQL database name | 
+| POSTGRES_DB_HOST | string | __(required)__ Hostname/IP-Adress of the PostgreSQL instance | 
+| POSTGRES_DB_PORT | int | __(required)__ Port number of the PostgreSQL instance | 
 
 ## Exposed Ports
 
@@ -49,5 +45,5 @@ By default, your application will listen on port 8080 for incoming HTTP traffic.
 
 | Tag(s) | Payara version | Remarks |
 | --- | --- | --- |
-| latest, 2.0.0 | 5.192 | comes with JRE8 on Alpine |
+| latest, 2.0.0 | 5.192 | upgraded to 5.192 on AdoptOpenJDK 8 Alpine |
 | 1.0.1 | 5.184 | comes with JRE8 on Alpine |

@@ -1,100 +1,60 @@
-FROM openjdk:8-jre-alpine
+FROM docker.at.automotive.msg.team/msgoat/at41-docker-payara-full:5.2.0
 
 LABEL maintainer="michael.theis@msg.group" \
         ${project.groupId}.${project.artifactId}.project="AT.41" \
         ${project.groupId}.${project.artifactId}.version="${project.version}" \
-        ${project.groupId}.${project.artifactId}.description="${project.description}" \
-        ${project.groupId}.${project.artifactId}.payara-version="5.192"
+        ${project.groupId}.${project.artifactId}.description="${project.description}"
 
-# Payara version (5.183+)
-ARG PAYARA_VERSION=5.192
-ARG PAYARA_PKG=https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/${PAYARA_VERSION}/payara-${PAYARA_VERSION}.zip
-ARG PAYARA_SHA1=710707f9a93b7313fb72ab4b409d5655287480c6
-ARG TINI_VERSION=v0.18.0
-ARG PAYARA_HOME=/opt/payara
+ARG POSTGRES_JDBC_DRIVER_VERSION=42.2.5
+ARG POSTGRES_JDBC_POOL_NAME=cnj-postgres-pool
+ARG POSTGRES_JDBC_DATASOURCE_NAME=cnj-postgres-datasource
+ARG PAYARA_AS_ADMIN_CMD="${PAYARA_DIR}/bin/asadmin --user ${ADMIN_USER} --passwordfile=${PASSWORD_FILE} --echo"
 
-# Initialize the configurable environment variables
-ENV HOME_DIR=$PAYARA_HOME\
-    PAYARA_DIR=$PAYARA_HOME/appserver\
-    # Add for backwards compatibility
-    PAYARA_PATH=$PAYARA_HOME/appserver\
-    SCRIPT_DIR=$PAYARA_HOME/scripts\
-    CONFIG_DIR=$PAYARA_HOME/config\
-    DEPLOY_DIR=$PAYARA_HOME/deployments\
-    PASSWORD_FILE=$PAYARA_HOME/passwordFile\
-    # Added for backwards compatibility
-    PAYARA_PASSWORD_FILE=$PAYARA_HOME/passwordFile\
-    # Payara Server Domain options
-    DOMAIN_NAME=production\
-    ADMIN_USER=admin\
-    ADMIN_PASSWORD=admin \
-    # Utility environment variables
-    JVM_ARGS=\
-    PAYARA_ARGS=\
-    DEPLOY_PROPS=\
-    POSTBOOT_COMMANDS=/opt/payara/config/post-boot-commands.asadmin\
-    PREBOOT_COMMANDS=/opt/payara/config/pre-boot-commands.asadmin
-#ENV PATH="${PATH}:${PAYARA_DIR}/bin"
+RUN echo "Downloading PostgreSQL JDBC driver version ${POSTGRES_JDBC_DRIVER_VERSION}" \
+  && wget --no-verbose -O ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/lib/postgresql-${POSTGRES_JDBC_DRIVER_VERSION}.jar \
+       http://central.maven.org/maven2/org/postgresql/postgresql/${POSTGRES_JDBC_DRIVER_VERSION}/postgresql-${POSTGRES_JDBC_DRIVER_VERSION}.jar \
+  && echo "Starting Payara domain ${DOMAIN_NAME} to configure application resources" \
+  && ${PAYARA_AS_ADMIN_CMD} start-domain ${DOMAIN_NAME} \
+  && echo "Creating connection pool ${POSTGRES_JDBC_POOL_NAME}" \
+  && ${PAYARA_AS_ADMIN_CMD} create-jdbc-connection-pool \
+    	--datasourceclassname org.postgresql.ds.PGSimpleDataSource \
+        --restype javax.sql.DataSource \
+        --property user=\${ENV=POSTGRES_DB_USER}:password=\${ENV=POSTGRES_DB_PASSWORD}:DatabaseName=\${ENV=POSTGRES_DB_NAME}:ServerName=\${ENV=POSTGRES_DB_HOST}:port=\${ENV=POSTGRES_DB_PORT} \
+        ${POSTGRES_JDBC_POOL_NAME} \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.connection-creation-retry-attempts=2 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.connection-creation-retry-interval-in-seconds=10 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.connection-leak-reclaim=true \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.connection-leak-timeout-in-seconds=120 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.validation-classname=org.glassfish.api.jdbc.validation.PostgresConnectionValidation \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.connection-validation-method=custom-validation \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.is-connection-validation-required=true \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.is-isolation-level-guaranteed=true \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.max-pool-size=32 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.max-wait-time-in-millis=30000 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.pool-resize-quantity=4 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.pooling=true \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.slow-query-threshold-in-seconds=15 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.statement-cache-size=50 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.statement-leak-reclaim=true \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.statement-leak-timeout-in-seconds=120 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.statement-timeout-in-seconds=30 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.steady-pool-size=0 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.transaction-isolation-level=read-committed \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.validate-atmost-once-period-in-seconds=90 \
+  && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.wrap-jdbc-objects=true \
+  && echo "Creating JDBC datasource ${POSTGRES_JDBC_DATASOURCE_NAME}" \
+  && ${PAYARA_AS_ADMIN_CMD} create-jdbc-resource \
+    	--connectionpoolid ${POSTGRES_JDBC_POOL_NAME} \
+    	jdbc/${POSTGRES_JDBC_DATASOURCE_NAME} \
+  && echo "Setting up JSON logging" \
+  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.formatter='fish.payara.enterprise.server.logging.JSONLogFormatter' \
+  && echo "Stopping Payara domain ${DOMAIN_NAME} after configuring application resources" \
+  && ${PAYARA_AS_ADMIN_CMD} stop-domain --kill true ${DOMAIN_NAME}
 
-COPY *.crt /usr/local/share/ca-certificates/
+# Required environment variables for PostgreSQL datasource configuration
+ENV POSTGRES_DB_USER=""\
+    POSTGRES_DB_PASSWORD=""\
+    POSTGRES_DB_NAME=""\
+    POSTGRES_DB_HOST=""\
+    POSTGRES_DB_PORT=""
 
-RUN echo "Update packages, install required packages and update trust store" && \
-    apk update && \
-    apk add curl wget bash gnupg ca-certificates && \
-    rm -rf /var/cache/apk/* && \
-    update-ca-certificates && \
-    echo "Create and set the Payara user and working directory owned by the new user" && \
-    addgroup -S payara && \
-    adduser -S -G payara -h ${HOME_DIR} payara && \
-    echo payara:payara | chpasswd && \
-    mkdir -p ${DEPLOY_DIR} && \
-    mkdir -p ${CONFIG_DIR} && \
-    mkdir -p ${SCRIPT_DIR} && \
-    mkdir -p ${HOME_DIR}/.gfclient && \
-    chown -R payara:payara ${HOME_DIR}
-
-USER payara
-WORKDIR ${HOME_DIR}
-
-RUN echo "Download and unzip the Payara distribution" && \
-    wget --no-verbose -O payara.zip ${PAYARA_PKG} && \
-    echo "${PAYARA_SHA1} *payara.zip" | sha1sum -c - && \
-    unzip -qq payara.zip -d ./ && \
-    mv payara*/ appserver && \
-    echo "Configure the password file for configuring Payara" && \
-    echo -e "AS_ADMIN_PASSWORD=\nAS_ADMIN_NEWPASSWORD=${ADMIN_PASSWORD}\n\n" > /tmp/tmpfile && \
-    echo -e "AS_ADMIN_PASSWORD=${ADMIN_PASSWORD}\n\n" >> ${PASSWORD_FILE} && \
-    echo "Configure the payara domain" && \
-    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=/tmp/tmpfile change-admin-password --domain_name=${DOMAIN_NAME} && \
-    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} start-domain ${DOMAIN_NAME} && \
-    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} enable-secure-admin && \
-    for MEMORY_JVM_OPTION in $(${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} list-jvm-options | grep "Xm[sx]"); do\
-        ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} delete-jvm-options $MEMORY_JVM_OPTION;\
-    done && \
-    # FIXME: when upgrading this container to Java 10+, this needs to be changed to '-XX:+UseContainerSupport' and '-XX:MaxRAMPercentage'
-    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} create-jvm-options '-XX\:+UnlockExperimentalVMOptions:-XX\:+UseCGroupMemoryLimitForHeap:-XX\:MaxRAMFraction=1' && \
-    # FIXME: waiting on fix to https://github.com/payara/Payara/issues/3506
-    #${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.logtoFile=false && \
-    ${PAYARA_DIR}/bin/asadmin --user=${ADMIN_USER} --passwordfile=${PASSWORD_FILE} stop-domain ${DOMAIN_NAME} && \
-    # Cleanup unused files
-    rm -rf \
-        /tmp/tmpFile \
-        payara.zip \
-        ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/osgi-cache \
-        ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/logs \
-        ${PAYARA_DIR}/glassfish/domains/domain1
-
-# Copy across docker scripts
-COPY --chown=payara:payara *.sh ${SCRIPT_DIR}/
-RUN mkdir -p ${SCRIPT_DIR}/init.d && \
-    chmod +x ${SCRIPT_DIR}/*
-
-# Default payara ports to expose
-# 4848: admin console
-# 9009: debug port (JPDA)
-# 8080: http
-# 8181: https
-EXPOSE 4848 9009 8080 8181
-
-ENTRYPOINT ["scripts/docker-entrypoint.sh"]
-CMD ["start-domain"]

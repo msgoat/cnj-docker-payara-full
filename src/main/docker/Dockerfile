@@ -1,11 +1,11 @@
-FROM docker.at.automotive.msg.team/msgoat/at41-docker-payara-full:5.2.0
+FROM docker.at.automotive.msg.team/msgoat/at41-docker-payara-full:7.0.0
 
 LABEL maintainer="michael.theis@msg.group" \
         ${project.groupId}.${project.artifactId}.project="AT.41" \
         ${project.groupId}.${project.artifactId}.version="${project.version}" \
         ${project.groupId}.${project.artifactId}.description="${project.description}"
 
-ARG POSTGRES_JDBC_DRIVER_VERSION=42.2.5
+ARG POSTGRES_JDBC_DRIVER_VERSION=42.2.6
 ARG POSTGRES_JDBC_POOL_NAME=cnj-postgres-pool
 ARG POSTGRES_JDBC_DATASOURCE_NAME=cnj-postgres-datasource
 ARG PAYARA_AS_ADMIN_CMD="${PAYARA_DIR}/bin/asadmin --user ${ADMIN_USER} --passwordfile=${PASSWORD_FILE} --echo"
@@ -19,7 +19,7 @@ RUN echo "Downloading PostgreSQL JDBC driver version ${POSTGRES_JDBC_DRIVER_VERS
   && ${PAYARA_AS_ADMIN_CMD} create-jdbc-connection-pool \
     	--datasourceclassname org.postgresql.ds.PGSimpleDataSource \
         --restype javax.sql.DataSource \
-        --property user=\${ENV=POSTGRES_DB_USER}:password=\${ENV=POSTGRES_DB_PASSWORD}:DatabaseName=\${ENV=POSTGRES_DB_NAME}:ServerName=\${ENV=POSTGRES_DB_HOST}:port=\${ENV=POSTGRES_DB_PORT} \
+        --property user=\${ENV=POSTGRES_DB_USER}:password=\${ENV=POSTGRES_DB_PASSWORD}:databaseName=\${ENV=POSTGRES_DB_NAME}:serverName=\${ENV=POSTGRES_DB_HOST}:portNumber=\${ENV=POSTGRES_DB_PORT} \
         ${POSTGRES_JDBC_POOL_NAME} \
   && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.connection-creation-retry-attempts=2 \
   && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.connection-creation-retry-interval-in-seconds=10 \
@@ -43,11 +43,9 @@ RUN echo "Downloading PostgreSQL JDBC driver version ${POSTGRES_JDBC_DRIVER_VERS
   && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.validate-atmost-once-period-in-seconds=90 \
   && ${PAYARA_AS_ADMIN_CMD} set resources.jdbc-connection-pool.${POSTGRES_JDBC_POOL_NAME}.wrap-jdbc-objects=true \
   && echo "Creating JDBC datasource ${POSTGRES_JDBC_DATASOURCE_NAME}" \
-  && ${PAYARA_AS_ADMIN_CMD} create-jdbc-resource \
-    	--connectionpoolid ${POSTGRES_JDBC_POOL_NAME} \
-    	jdbc/${POSTGRES_JDBC_DATASOURCE_NAME} \
+  && ${PAYARA_AS_ADMIN_CMD} create-jdbc-resource --connectionpoolid ${POSTGRES_JDBC_POOL_NAME} jdbc/${POSTGRES_JDBC_DATASOURCE_NAME} \
   && echo "Setting up JSON logging" \
-  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.formatter='fish.payara.enterprise.server.logging.JSONLogFormatter' \
+  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes java.util.logging.ConsoleHandler.formatter='fish.payara.enterprise.server.logging.JSONLogFormatter' \
   && echo "Stopping Payara domain ${DOMAIN_NAME} after configuring application resources" \
   && ${PAYARA_AS_ADMIN_CMD} stop-domain --kill true ${DOMAIN_NAME}
 

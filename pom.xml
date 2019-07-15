@@ -16,6 +16,7 @@
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
+        <docker.noCache>true</docker.noCache>
         <docker.verbose>true</docker.verbose>
         <maven.docker.plugin.version>0.27.2</maven.docker.plugin.version>
         <maven.docker.compose.plugin.version>2.2.0</maven.docker.compose.plugin.version>
@@ -30,7 +31,7 @@
         <maven.site.plugin.version>3.7.1</maven.site.plugin.version>
         <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
         <!-- new Maven version management -->
-        <revision>2.0.0</revision>
+        <revision>3.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>

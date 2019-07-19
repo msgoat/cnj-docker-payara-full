@@ -47,7 +47,10 @@ RUN echo "Downloading PostgreSQL JDBC driver version ${POSTGRES_JDBC_DRIVER_VERS
   && echo "Setting up JSON logging" \
   && ${PAYARA_AS_ADMIN_CMD} set-log-attributes java.util.logging.ConsoleHandler.formatter='fish.payara.enterprise.server.logging.JSONLogFormatter' \
   && echo "Stopping Payara domain ${DOMAIN_NAME} after configuring application resources" \
-  && ${PAYARA_AS_ADMIN_CMD} stop-domain --kill true ${DOMAIN_NAME}
+  && ${PAYARA_AS_ADMIN_CMD} stop-domain --kill true ${DOMAIN_NAME} \
+  && rm -rf \
+        ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/osgi-cache \
+        ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/logs
 
 # Required environment variables for PostgreSQL datasource configuration
 ENV POSTGRES_DB_USER=""\

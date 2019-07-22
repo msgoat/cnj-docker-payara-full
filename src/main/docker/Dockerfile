@@ -46,6 +46,15 @@ RUN echo "Downloading PostgreSQL JDBC driver version ${POSTGRES_JDBC_DRIVER_VERS
   && ${PAYARA_AS_ADMIN_CMD} create-jdbc-resource --connectionpoolid ${POSTGRES_JDBC_POOL_NAME} jdbc/${POSTGRES_JDBC_DATASOURCE_NAME} \
   && echo "Setting up JSON logging" \
   && ${PAYARA_AS_ADMIN_CMD} set-log-attributes java.util.logging.ConsoleHandler.formatter='fish.payara.enterprise.server.logging.JSONLogFormatter' \
+  && echo "Tell all other logging handlers to shut up" \
+  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.logStandardStreams='false' \
+  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.logtoConsole='false' \
+  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.logtoFile='false' \
+#  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles='0' \
+#  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.multiLineMode='false' \
+#  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes='500000' \
+  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes fish.payara.enterprise.server.logging.PayaraNotificationFileHandler.logtoFile='false' \
+#  && ${PAYARA_AS_ADMIN_CMD} set-log-attributes handlerServices='com.sun.enterprise.server.logging.GFFileHandler' \
   && echo "Stopping Payara domain ${DOMAIN_NAME} after configuring application resources" \
   && ${PAYARA_AS_ADMIN_CMD} stop-domain --kill true ${DOMAIN_NAME} \
   && rm -rf \

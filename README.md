@@ -3,6 +3,15 @@
 Builds a Payara Full Profile Server image primarily intended to be extended by the CloudTrain JavaEE showcases.
 Comes with a preconfigured PostgreSQL datasource.
 
+## Status
+![Build status](https://drone.at.automotive.msg.team/api/badges/cloudtrain/cnj-docker-payara-full/status.svg)
+
+## Release information
+
+Latest version is: `3.1.0`.
+
+A changelog can be found in [changelog.md](changelog.md).
+
 ## Docker Pull Command
 `docker pull hmfwpncj/cnj-docker-payara-full`
 

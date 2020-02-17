@@ -5,7 +5,7 @@
     <artifactId>cnj-docker-payara-full</artifactId>
     <version>${revision}${sha1}${changelist}</version>
     <packaging>pom</packaging>
-    <description>Docker image providing a Payara Full Profile server</description>
+    <description>Docker image providing a CloudTrain specific Payara Full Profile server</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -31,7 +31,7 @@
         <maven.site.plugin.version>3.7.1</maven.site.plugin.version>
         <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
         <!-- new Maven version management -->
-        <revision>3.0.2</revision>
+        <revision>3.1.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>

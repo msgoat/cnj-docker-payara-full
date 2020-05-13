@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2020-05-13
+### Added
+### Changed
+- moved to new toolchain and docker registry
+
 ## [3.1.0] - 2020-02-17
 ### Added
 ### Changed

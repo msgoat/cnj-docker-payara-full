@@ -1,6 +1,13 @@
-pipeline:
-  dockerize-stage:
-    image: docker.at.automotive.msg.team/msgoat/at41-drone-maven
+---
+kind: pipeline
+type: kubernetes
+name: cnj-hello-build
+
+steps:
+  - name: dockerize-stage
+    image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build
+    privileged: true
     commands:
+      - start-docker.sh
       - mvn clean deploy --batch-mode --fail-fast --errors -V -U
 

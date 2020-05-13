@@ -4,7 +4,7 @@ Builds a Payara Full Profile Server image primarily intended to be extended by t
 Comes with a preconfigured PostgreSQL datasource.
 
 ## Status
-![Build status](https://drone.at.automotive.msg.team/api/badges/cloudtrain/cnj-docker-payara-full/status.svg)
+![Build status](https://drone.at41tools.k8s.aws.msgoat.eu/api/badges/cloudtrain/cnj-docker-payara-full/status.svg)
 
 ## Release information
 
@@ -21,7 +21,7 @@ If you want to run your own application using this base docker image you will ha
 using the following docker build file template:
 
 ``` 
-FROM docker.at.automotive.msg.team/cloudtrain/docker-payara-full:latest
+FROM docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/docker-payara-full:latest
 
 # copy build artifact into payara deployment folder
 COPY *.war ${DEPLOY_DIR}/

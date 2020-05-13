@@ -8,12 +8,12 @@ Comes with a preconfigured PostgreSQL datasource.
 
 ## Release information
 
-Latest version is: `3.1.0`.
+Latest version is: `4.0.0`.
 
 A changelog can be found in [changelog.md](changelog.md).
 
 ## Docker Pull Command
-`docker pull hmfwpncj/cnj-docker-payara-full`
+`docker pull docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-docker-payara-full`
 
 ## Usage 
 
@@ -50,11 +50,3 @@ By default, your application will listen on port 8080 for incoming HTTP traffic.
 | 8080 | HTTP | HTTP endpoint of your application | 
 | 4848 | HTTP | HTTP endpoint of the Payara admin console |
  
-## Version / Tags
-
-| Tag(s) | Payara version | Remarks |
-| --- | --- | --- |
-| latest, 3.1.0 | 5.194 | upgraded Payara version und PostgreSQL JDBC driver version |
-| 3.0.0 | 5.192 | switched to JRE 11 based on AdoptOpenJDK 11 Alpine |
-| 2.0.0 | 5.192 | upgraded to 5.192 on AdoptOpenJDK 8 Alpine |
-| 1.0.1 | 5.184 | comes with JRE8 on Alpine |

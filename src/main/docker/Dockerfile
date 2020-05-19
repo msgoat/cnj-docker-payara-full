@@ -1,14 +1,14 @@
-FROM docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/at41-docker-payara-full:8.0.0
-
-LABEL maintainer="michael.theis@msg.group" \
-        ${project.groupId}.${project.artifactId}.project="CloudTrain" \
-        ${project.groupId}.${project.artifactId}.version="${project.version}" \
-        ${project.groupId}.${project.artifactId}.description="${project.description}"
+FROM docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/at41-docker-payara-full:8.1.0
 
 ARG POSTGRES_JDBC_DRIVER_VERSION=42.2.10
 ARG POSTGRES_JDBC_POOL_NAME=cnj-postgres-pool
 ARG POSTGRES_JDBC_DATASOURCE_NAME=cnj-postgres-datasource
 ARG PAYARA_AS_ADMIN_CMD="${PAYARA_DIR}/bin/asadmin --user ${ADMIN_USER} --passwordfile=${PASSWORD_FILE} --echo"
+
+LABEL maintainer="michael.theis@msg.group" \
+        ${project.groupId}.${project.artifactId}.project="CloudTrain" \
+        ${project.groupId}.${project.artifactId}.version="${project.version}" \
+        ${project.groupId}.${project.artifactId}.description="${project.description}"
 
 RUN echo "Downloading PostgreSQL JDBC driver version ${POSTGRES_JDBC_DRIVER_VERSION}" \
   && wget --no-verbose -O ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/lib/postgresql-${POSTGRES_JDBC_DRIVER_VERSION}.jar \

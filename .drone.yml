@@ -5,9 +5,9 @@ name: cnj-hello-build
 
 steps:
   - name: dockerize-stage
-    image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build:1.0.0
+    image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build:1.1.0
     privileged: true
     commands:
       - start-docker.sh
-      - mvn clean deploy --batch-mode --fail-fast --errors -V -U
+      - mvn clean deploy --batch-mode --fail-fast --errors -V -U -Dchangelist=.${DRONE_BRANCH} -Dsha1=.${DRONE_COMMIT_SHA:0:8}
 

@@ -8,7 +8,7 @@ Comes with a preconfigured PostgreSQL datasource.
 
 ## Release information
 
-Latest version is: `4.1.0`.
+Latest version is: `4.2.0`.
 
 A changelog can be found in [changelog.md](changelog.md).
 

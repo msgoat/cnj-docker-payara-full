@@ -1,6 +1,6 @@
-FROM docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/at41-docker-payara-full:8.2.0
+FROM docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/at41-docker-payara-full:8.3.0
 
-ARG POSTGRES_JDBC_DRIVER_VERSION=42.2.14
+ARG POSTGRES_JDBC_DRIVER_VERSION=42.2.18
 ARG POSTGRES_JDBC_POOL_NAME=cnj-postgres-pool
 ARG POSTGRES_JDBC_DATASOURCE_NAME=cnj-postgres-datasource
 ARG PAYARA_AS_ADMIN_CMD="${PAYARA_DIR}/bin/asadmin --user ${ADMIN_USER} --passwordfile=${PASSWORD_FILE} --echo"

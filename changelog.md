@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.3.0] - 2020-10-19
+### Added
+### Changed
+- upgraded Payara to 5.2020.4 now
+- upgraded PostgreSQL JDBC driver to 42.2.18
+
 ## [4.2.0] - 2020-07-20
 ### Added
 ### Changed

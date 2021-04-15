@@ -11,7 +11,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <junit.version>5.3.2</junit.version>
-        <docker.registry.name>docker.at41tools.k8s.aws.msgoat.eu</docker.registry.name>
+        <docker.registry.name>docker.cloudtrain.aws.msgoat.eu</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
@@ -31,7 +31,7 @@
         <maven.site.plugin.version>3.7.1</maven.site.plugin.version>
         <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
         <!-- new Maven version management -->
-        <revision>4.3.0</revision>
+        <revision>5.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
@@ -216,9 +216,9 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>at41-maven-repository</id>
-            <name>msg Automotive AT Maven Releases Repository</name>
-            <url>https://nexus.at41tools.k8s.aws.msgoat.eu/repository/maven-releases/</url>
+            <id>cloudtrain-maven-repository</id>
+            <name>msg Automotive CloudTrain Releases Repository</name>
+            <url>https://nexus.cloudtrain.aws.msgoat.eu/repository/cloudtrain-releases/</url>
         </repository>
     </distributionManagement>
 </project>

@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.0] - 2021-10-20
+### Added
+### Changed
+- upgraded to latest Java 11 version provided by Eclipse Tamurine
+- upgraded Payara to 5.2021.7 now
+- upgraded PostgreSQL JDBC driver to 42.3.0
+
 ## [5.0.0] - 2021-04-15
 ### Added
 ### Changed

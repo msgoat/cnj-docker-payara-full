@@ -135,8 +135,11 @@ ENV POSTGRES_DB_USER=""\
     POSTGRES_DB_HOST=""\
     POSTGRES_DB_PORT=""
 
+# Switch current directory to Payara script directory
+WORKDIR $SCRIPT_DIR
+
 # Default payara ports to expose
 EXPOSE 4848 8009 8080 8181
 
-ENTRYPOINT ["./scripts/docker-entrypoint.sh"]
+ENTRYPOINT ["/opt/payara/scripts/docker-entrypoint.sh"]
 CMD ["start-domain"]

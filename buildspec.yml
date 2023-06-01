@@ -16,6 +16,8 @@ phases:
       - echo "Running phase pre_build"
       - echo "Download common configuration files"
       - aws s3 cp s3://s3-eu-west-1-cloudtrain-codebuild-shared/.mvn/settings.xml /root/.m2/settings.xml
+      - echo "Authenticate on DockerHub"
+      - docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PAT
   build:
     on-failure: ABORT
     commands:

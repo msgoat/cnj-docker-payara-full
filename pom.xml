@@ -7,9 +7,14 @@
     <packaging>pom</packaging>
     <description>Docker image providing a CloudTrain specific Payara Full Profile server</description>
     <properties>
+        <!-- new Maven version management -->
+        <revision>7.0.0</revision>
+        <sha1></sha1>
+        <changelist></changelist>
+        <!-- common Maven properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <junit.version>5.3.2</junit.version>
         <docker.registry.name>docker.cloudtrain.aws.msgoat.eu</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
@@ -36,10 +41,6 @@
         <maven.war.plugin.version>3.3.2</maven.war.plugin.version>
         <!-- pinning versions of cloud native specific maven plugins -->
         <maven.docker.plugin.version>0.37.0</maven.docker.plugin.version>
-        <!-- new Maven version management -->
-        <revision>6.0.0</revision>
-        <sha1></sha1>
-        <changelist></changelist>
     </properties>
     <build>
         <pluginManagement>

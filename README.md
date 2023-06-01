@@ -4,7 +4,7 @@ Builds a Payara Full Profile Server image primarily intended to be extended by t
 Comes with a preconfigured PostgreSQL datasource.
 
 ## Status
-![Build status](https://drone.cloudtrain.aws.msgoat.eu/api/badges/msgoat/cnj-docker-payara-full/status.svg)
+![Build status](https://codebuild.eu-west-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiMkt4OE1WV1Y2UlJkbmlCWUg3N0FNVG83a1p5aVZnOFJDYTB4em5KcHlxM2hzOExVNVFNU3N2V2FFbi9qenZmOHNiUnNwZFFjUTg1Z2lMZGlWZm01L1EwPSIsIml2UGFyYW1ldGVyU3BlYyI6IjhaMjk4dnZtT0pRd0NHcVciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 
 ## Release information
 

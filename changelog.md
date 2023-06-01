@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.0] - 2023-06-01
+### Changed
+- upgraded to latest Java 17
+- upgraded Payara to 6.2023.5
+- upgraded PostgreSQL JDBC driver to 42.6.0
+
 ## [6.0.0] - 2021-10-20
 ### Added
 ### Changed

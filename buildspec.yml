@@ -6,6 +6,9 @@ env:
     NEXUS_PASSWORD: "cloudtrain-codebuild-nexus:password"
     DOCKERHUB_USER: "cloudtrain-codebuild-dockerhub:docker-user"
     DOCKERHUB_PAT: "cloudtrain-codebuild-dockerhub:docker-pat"
+    HARBOR_USER: "cloudtrain-codebuild-harbor:user"
+    HARBOR_PASSWORD: "cloudtrain-codebuild-harbor:token"
+    SONARQUBE_TOKEN: "cloudtrain-codebuild-sonarqube:token"
 
 phases:
   install:
